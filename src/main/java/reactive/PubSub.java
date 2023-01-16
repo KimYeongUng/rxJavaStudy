@@ -47,6 +47,8 @@ public class PubSub {
 
         Flow.Subscriber s = new Flow.Subscriber() {
             Flow.Subscription subscription;
+
+            // 구독 시작
             @Override
             public void onSubscribe(Flow.Subscription subscription) {
                 // 몇개보낼건지
