@@ -3,8 +3,6 @@ package reactive;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.util.function.Function;
-
 public class DelegateSub<T,R> implements Subscriber<T>{
         private Subscriber<? super R> sub;
 
@@ -19,7 +17,7 @@ public class DelegateSub<T,R> implements Subscriber<T>{
 
         @Override
         public void onNext(T t) {
-            // sub.onNext(t);
+//             sub.onNext(t);
         }
 
         @Override
