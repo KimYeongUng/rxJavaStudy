@@ -1,21 +1,19 @@
 package rxjava;
 
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscription;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@Slf4j
 @SpringBootApplication
 public class SpringBootApplication01 {
 
     @RestController
     public static class Controller{
-        private Logger log = LoggerFactory.getLogger(SpringBootApplication.class);
 
         @RequestMapping(value="/hello",produces="application/json;charset=UTF-8")
         public Publisher<String> hello(String name){

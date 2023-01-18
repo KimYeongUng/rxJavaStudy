@@ -31,7 +31,7 @@ public class SchedulerEx {
             });
         };
 
-        // Thrad 할당 , onNext 작업은 메인스레드가 아닌 싱글스레드에서 수행
+        // Thread 할당 , onNext 작업은 메인스레드가 아닌 싱글스레드에서 수행
         // todo : Thread ShutDown
         Publisher<Integer> subOnpub = sub ->{
           ExecutorService es = Executors.newSingleThreadExecutor(new CustomizableThreadFactory(){
@@ -85,7 +85,6 @@ public class SchedulerEx {
             public void onSubscribe(Subscription s) {
                 log.info("onSubscribe");
                 s.request(Long.MAX_VALUE); // unlimited
-
             }
 
             @Override

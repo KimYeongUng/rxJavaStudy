@@ -15,9 +15,9 @@ public class FluxEx {
 //                .subscribeOn(Schedulers.newSingle("subOn-"))
 //                .subscribe(System.out::println);
 
-        Flux.interval(Duration.ofMillis(200))
+        Flux.interval(Duration.ofMillis(200)) // 200ms 마다 하나씩 생성
                 .take(10) // 10개 받고 끝
-                .subscribe(s->log.info("OnNext: {}",s));
+                .subscribe(s->log.info("OnNext: {}",s)); // subscribe function
 
         TimeUnit.SECONDS.sleep(10);
         log.info("EXIT");

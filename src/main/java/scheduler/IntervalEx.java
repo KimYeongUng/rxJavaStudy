@@ -12,31 +12,30 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class IntervalEx {
     public static void main(String[] args) {
-        Publisher<Integer> pub = sub ->{
-            sub.onSubscribe(new Subscription() {
-                int no = 0;
-                volatile boolean cancel = false;
 
-                @Override
-                public void request(long n) {
-                    ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-                    exec.scheduleAtFixedRate(()->{
-                        if(cancel){
-                            exec.shutdown();
-                            return;
-                        }
-                        sub.onNext(no++);
-                    },0,300, TimeUnit.MICROSECONDS);
+        Publisher<Integer> pub = sub -> sub.onSubscribe(new Subscription() {
+            int no = 0;
+            volatile boolean cancel = false;
+
+            @Override
+            public void request(long n) {
+                ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+                exec.scheduleAtFixedRate(()->{
+                    if(cancel){
+                        exec.shutdown();
+                        return;
+                    }
+                    sub.onNext(no++);
+                },0,300, TimeUnit.MICROSECONDS);
 
 
-                }
+            }
 
-                @Override
-                public void cancel() {
-                    cancel = true;
-                }
-            });
-        };
+            @Override
+            public void cancel() {
+                cancel = true;
+            }
+        });
 
         Publisher<Integer> takePub = sub ->{
             pub.subscribe(new Subscriber<>() {
