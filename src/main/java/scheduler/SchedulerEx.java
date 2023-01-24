@@ -13,23 +13,21 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class SchedulerEx {
     public static void main(String[] args) {
-        Publisher<Integer> pub = sub -> {
-            sub.onSubscribe(new Subscription() {
-                @Override
-                public void request(long n) {
-                    sub.onNext(1);
-                    sub.onNext(2);
-                    sub.onNext(3);
-                    sub.onNext(4);
-                    sub.onNext(5);
-                    sub.onComplete();
-                }
+        Publisher<Integer> pub = sub -> sub.onSubscribe(new Subscription() {
+            @Override
+            public void request(long n) {
+                sub.onNext(1);
+                sub.onNext(2);
+                sub.onNext(3);
+                sub.onNext(4);
+                sub.onNext(5);
+                sub.onComplete();
+            }
 
-                @Override
-                public void cancel() {
-                }
-            });
-        };
+            @Override
+            public void cancel() {
+            }
+        });
 
         // Thread 할당 , onNext 작업은 메인스레드가 아닌 싱글스레드에서 수행
         // todo : Thread ShutDown

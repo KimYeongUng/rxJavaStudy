@@ -17,7 +17,7 @@ public class SpringBootApplication01 {
 
         @RequestMapping(value="/hello",produces="application/json;charset=UTF-8")
         public Publisher<String> hello(String name){
-            log.info("Parameter Name: "+name);
+            log.info("Parameter Name: " + name);
             return sub -> sub.onSubscribe(new Subscription() {
                 @Override
                 public void request(long n) {
