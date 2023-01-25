@@ -17,7 +17,7 @@ public class LoadTest {
         ExecutorService es = Executors.newFixedThreadPool(100);
 
         RestTemplate rt = new RestTemplate();
-        String url = "http://localhost:8080/async";
+        String url = "http://localhost:8080/dr";
         StopWatch watch = new StopWatch();
         watch.start();
 
@@ -29,7 +29,7 @@ public class LoadTest {
                 sw.start();
                 rt.getForObject(url,String.class);
                 sw.stop();
-                log.info("Elapsed: "+idx+"->"+sw.getTotalTimeMillis());
+                log.info("Elapsed: "+idx+" -> "+sw.getTotalTimeMillis()+"ms");
             });
         }
 

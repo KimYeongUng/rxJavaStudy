@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 @Slf4j
 @SpringBootApplication
@@ -21,26 +24,50 @@ public class SpringBootApplication02 {
 
     @RestController
     public class MyController{
+        Queue<DeferredResult<String>> results = new ConcurrentLinkedDeque<>();
 
         @Autowired
         MyService service;
 
         @GetMapping("/async")
-        public Callable<String> async() throws InterruptedException {
-            log.info("Callable"); // thread 8080-exec-1
+        public Callable<String> async() {
+            log.info("Callable");
             return ()->{
-                log.info("callable Async"); // thread task -1
+                log.info("callable Async");
                 Thread.sleep(2000);
                 return "Async";
             };
         }
 
-//        @GetMapping("/async02")
-//        public String callable() throws InterruptedException {
-//            log.info("async");
-//            Thread.sleep(2000);
-//            return "hello";
-//        }
+        @GetMapping("/dr/count")
+        public String drCount(){
+            return String.valueOf(results.size());
+        }
+
+        @GetMapping("dr/event")
+        public String drEvent(String msg){
+            for (DeferredResult<String> dr : results){
+                dr.setResult("Hello "+msg);
+                results.remove(dr);
+            }
+
+            return "OK";
+        }
+
+        @GetMapping("/dr")
+        public DeferredResult<String> deferredResult(){
+            log.info("dr");
+            DeferredResult<String> deferredResult = new DeferredResult<>(60000L);
+            results.add(deferredResult);
+
+            return deferredResult;
+        }
+        @GetMapping("/async02")
+        public String callable() throws InterruptedException {
+            log.info("async");
+            Thread.sleep(2000);
+            return "hello";
+        }
 
 
     }
