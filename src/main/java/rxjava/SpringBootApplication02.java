@@ -12,10 +12,12 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @SpringBootApplication
@@ -69,7 +71,22 @@ public class SpringBootApplication02 {
             return "hello";
         }
 
+        @GetMapping("/emitter")
+        public ResponseBodyEmitter emitter(){
+            ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+            Executors.newSingleThreadExecutor().submit(()->{
+                try {
+                    for (int i=1;i<=50;i++){
+                            emitter.send("<p>Stream"+i+"</p>");
+                            Thread.sleep(1000);
+                    }
+                }catch (Exception e){
+                    log.info("EXCEPTION");
+                }
+            });
 
+            return emitter;
+        }
     }
 
     @Component
