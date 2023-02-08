@@ -170,6 +170,7 @@ public class SpringBootApplication03 {
 
     public static void main(String[] args) {
         System.setProperty("reactor.ipc.netty.workerCount","1");
+        System.setProperty("reactor.ipc.netty.pool.maxConnections","1000");
         SpringApplication.run(RemoteService.class,args);
     }
 }
