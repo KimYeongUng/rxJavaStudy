@@ -1,14 +1,14 @@
 package rxjava;
 
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.Netty4ClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,8 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -24,46 +25,31 @@ import java.util.function.Function;
 
 @SpringBootApplication
 @SuppressWarnings("deprecation")
+@Slf4j
 @EnableAsync
 public class SpringBootApplication03 {
 
     @RestController
     public static class MyController{
-        AsyncRestTemplate rt = new AsyncRestTemplate(new Netty4ClientHttpRequestFactory(new NioEventLoopGroup(
-                1)));
+        AsyncRestTemplate rt = new AsyncRestTemplate(new Netty4ClientHttpRequestFactory(new NioEventLoopGroup(1)));
         static final String URL1 = "http://localhost:8081/service1?req={req}";
         static final String URL2 = "http://localhost:8081/service2?req={req}";
+
         @Autowired
         Myservice myservice;
 
+        WebClient client = WebClient.create();
+
         @GetMapping("/rest")
-        public DeferredResult<String> rest(int idx) {
-
-            DeferredResult<String> dr = new DeferredResult<>();
-            toCf(rt.getForEntity(URL1,String.class,"h"+idx))
-                    .thenCompose(s -> toCf(rt.getForEntity(URL2,String.class,s.getBody())) )
-                    .thenCompose(s2 -> toCf(myservice.work(s2.getBody())))
-                    .thenAccept(dr::setResult)
-                    .exceptionally(e-> {
-                        dr.setErrorResult(e.getMessage());
-                        return (Void)null;
-                        }
-                    );
-
-              // chaining
-//            Completion
-//                    .from(rt.getForEntity(URL1,String.class,"h"+idx))
-//                    .andApply(s->rt.getForEntity(URL2,String.class,s.getBody()))
-//                    .andApply(s->myservice.work(s.getBody()))
-//                    .andError(e->dr.setErrorResult(e.toString()))
-//                    .andAccept(s->dr.setResult(s));
-            return dr;
-        }
-
-        <T> CompletableFuture<T> toCf(ListenableFuture<T> lf){
-            CompletableFuture<T> cf = new CompletableFuture<>();
-            lf.addCallback(cf::complete, cf::completeExceptionally);
-            return cf;
+        public Mono<String> rest(int idx) {
+            return client.get().uri(URL1,idx).exchange()
+                    .flatMap(c->c.bodyToMono(String.class))
+                    .doOnNext(c->log.info(c.toString()))
+                    .flatMap((String res1)-> client.get().uri(URL2,res1).exchange())
+                    .flatMap(c->c.bodyToMono(String.class))
+                    .doOnNext(c->log.info(c.toString()))
+                    .flatMap(res2->Mono.fromCompletionStage(myservice.work(res2)))
+                    .doOnNext(s->log.info(s.toString()));
         }
     }
 
@@ -127,7 +113,7 @@ public class SpringBootApplication03 {
 
         public static <S,T> Completion<S,T> from(ListenableFuture<T> lf) {
             Completion<S,T> c = new Completion<>();
-            lf.addCallback(s->c.complete(s),e->c.error(e));
+            lf.addCallback(c::complete, c::error);
 
             return c;
         }
@@ -167,8 +153,9 @@ public class SpringBootApplication03 {
 
     @Service
     public static class Myservice{
-        public ListenableFuture<String> work(String req){
-            return new AsyncResult<>(req+"/asyncwork");
+        @Async
+        public CompletableFuture<String> work(String req){
+            return CompletableFuture.completedFuture("/async/"+req);
         }
     }
 
@@ -182,6 +169,7 @@ public class SpringBootApplication03 {
     }
 
     public static void main(String[] args) {
+        System.setProperty("reactor.ipc.netty.workerCount","1");
         SpringApplication.run(RemoteService.class,args);
     }
 }
