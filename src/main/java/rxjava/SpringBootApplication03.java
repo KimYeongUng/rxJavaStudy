@@ -44,12 +44,12 @@ public class SpringBootApplication03 {
         public Mono<String> rest(int idx) {
             return client.get().uri(URL1,idx).exchange()
                     .flatMap(c->c.bodyToMono(String.class))
-                    .doOnNext(c->log.info(c.toString()))
+                    .doOnNext(log::info)
                     .flatMap((String res1)-> client.get().uri(URL2,res1).exchange())
                     .flatMap(c->c.bodyToMono(String.class))
-                    .doOnNext(c->log.info(c.toString()))
+                    .doOnNext(log::info)
                     .flatMap(res2->Mono.fromCompletionStage(myservice.work(res2)))
-                    .doOnNext(s->log.info(s.toString()));
+                    .doOnNext(log::info);
         }
     }
 
