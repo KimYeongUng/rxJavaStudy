@@ -20,7 +20,5 @@ public class OtherOperator {
                 .map(cnt ->"do Work");
         timer.subscribe(data->log.info("other Thread:{}",data));
         Thread.sleep(2000L);
-
-
     }
 }

@@ -11,6 +11,6 @@ public class ObservableInterval {
         Observable.interval(0,1000L, TimeUnit.MILLISECONDS)
                 .map(num->num+" Count")
                 .subscribe(data -> log.info("operate: "+data));
-        Thread.sleep(2000);
+        Thread.sleep(3000);
     }
 }
