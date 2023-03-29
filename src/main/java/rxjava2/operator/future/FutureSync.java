@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FutureSync {
     public static void main(String[] args) throws InterruptedException {
         long startTime = System.currentTimeMillis();
-        int n = doTask(1,3);
+        int n = doTask(1,5);
         log.info("Task Finished : task"+n);
 
         n = doTask(2,1);
