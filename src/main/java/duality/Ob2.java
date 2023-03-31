@@ -1,5 +1,7 @@
 package duality;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ExecutorService;
@@ -8,6 +10,7 @@ import java.util.concurrent.Executors;
 // Duality Observalbe <--> Iterator
 // push
 @SuppressWarnings("deprecation")
+@Slf4j
 public class Ob2 {
     static class IterObservable extends Observable implements Runnable{
 
@@ -22,7 +25,7 @@ public class Ob2 {
     public static void main(String[] args) {
         // subscriber
         Observer ob = (o, arg) -> {
-            System.out.println(Thread.currentThread().getName()+": "+ arg);
+            log.info(Thread.currentThread().getName()+": "+ arg);
         };
 
         IterObservable io = new IterObservable();
@@ -30,7 +33,7 @@ public class Ob2 {
 
         ExecutorService es = Executors.newSingleThreadExecutor();
         es.execute(io);
-        System.out.println(Thread.currentThread().getName()+": EXIT");
+        log.info(Thread.currentThread().getName()+": EXIT");
         es.shutdown();
     }
 }
