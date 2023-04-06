@@ -9,7 +9,7 @@ import java.util.Arrays;
 @Slf4j
 public class ObservableMaterialize {
     public static void main(String[] args) throws InterruptedException {
-        Observable.concatEager( // error
+        Observable.just( // error
                 Observable.just(
                         getData().subscribeOn(Schedulers.io()),
                         getUser().subscribeOn(Schedulers.io())
