@@ -9,16 +9,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class FluxEx {
     public static void main(String[] args) throws InterruptedException {
-//        Flux.range(1,10)
-//                .publishOn(Schedulers.newSingle("pubOn-"))
-//                .log()
-//                .subscribeOn(Schedulers.newSingle("subOn-"))
-//                .subscribe(System.out::println);
-
-        Flux.interval(Duration.ofMillis(200)) // 200ms 마다 하나씩 생성
-                .take(10) // 10개 받고 끝
-                .subscribe(s->log.info("OnNext: {}",s)); // subscribe function
-
+        Flux.interval(Duration.ofMillis(200L))
+                .take(10)
+                .subscribe(l->log.info("onNext(): {}",l));
         TimeUnit.SECONDS.sleep(10);
         log.info("EXIT");
     }

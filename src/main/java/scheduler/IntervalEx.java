@@ -12,46 +12,46 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class IntervalEx {
     public static void main(String[] args) {
+        Publisher<Integer> pub = sub->{
+            sub.onSubscribe(new Subscription() {
+                int value = 0;
+                volatile boolean canceled = false;
+                @Override
+                public void request(long n) {
+                    ScheduledExecutorService  exec = Executors.newSingleThreadScheduledExecutor();
+                    exec.scheduleAtFixedRate(()->{
+                        if(canceled) {
+                            exec.shutdown();
+                            return;
+                        }
+                        sub.onNext(++value);
+                    },0,300, TimeUnit.MILLISECONDS);
+                }
 
-        Publisher<Integer> pub = sub -> sub.onSubscribe(new Subscription() {
-            int no = 0;
-            volatile boolean cancel = false;
+                @Override
+                public void cancel() {
+                    canceled = true;
+                }
+            });
+        };
 
-            @Override
-            public void request(long n) {
-                ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-                exec.scheduleAtFixedRate(()->{
-                    if(cancel){
-                        exec.shutdown();
-                        return;
-                    }
-                    sub.onNext(no++);
-                },0,300, TimeUnit.MICROSECONDS);
-
-
-            }
-
-            @Override
-            public void cancel() {
-                cancel = true;
-            }
-        });
-
-        Publisher<Integer> takePub = sub ->{
-            pub.subscribe(new Subscriber<>() {
-                int count = 0;
-                Subscription subs;
+        Publisher<Integer> takePub = sub -> {
+            pub.subscribe(new Subscriber<Integer>() {
+                int cnt = 0;
+                Subscription subscription;
                 @Override
                 public void onSubscribe(Subscription s) {
+                    subscription = s;
                     sub.onSubscribe(s);
                 }
 
                 @Override
                 public void onNext(Integer integer) {
                     sub.onNext(integer);
-                    if(++count > 10){
-                        subs.cancel();
+                    if(++cnt > 9){
+                        subscription.cancel();
                     }
+
                 }
 
                 @Override
@@ -66,29 +66,26 @@ public class IntervalEx {
             });
         };
 
-        takePub.subscribe(new Subscriber<>() {
+        takePub.subscribe(new Subscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription sub) {
+            public void onSubscribe(Subscription s) {
                 log.info("onSubscribe");
-                sub.request(Long.MAX_VALUE);
+                s.request(Long.MAX_VALUE);
             }
 
             @Override
             public void onNext(Integer integer) {
-                log.info("onNext: "+integer);
-
+                log.info("onNext(): {}",integer);
             }
 
             @Override
             public void onError(Throwable t) {
-                log.info("onError");
-
+                log.error("onError: {}",t.getMessage());
             }
 
             @Override
             public void onComplete() {
                 log.info("onComplete");
-
             }
         });
     }
