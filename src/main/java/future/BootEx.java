@@ -1,8 +1,6 @@
 package future;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -10,17 +8,40 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.Callable;
 
 @SpringBootApplication
 @Slf4j
 @EnableAsync
 public class BootEx {
 
-    @Service
+    @RestController
+    static class MyController{
+        @GetMapping("/async")
+        public Callable<String> async() throws InterruptedException {
+            log.info("callable");
+            return ()->{
+                log.info("async");
+                Thread.sleep(2000L);
+                return "Hello";
+            };
+        }
+
+        @GetMapping("/sync")
+        public String callable() throws InterruptedException {
+            log.info("sync");
+            Thread.sleep(2000L);
+            return "hello";
+        }
+    }
+
+    @Component
     static class MyService{
         @Async
         public ListenableFuture<String> hello() throws InterruptedException {
@@ -30,22 +51,19 @@ public class BootEx {
         }
     }
 
-    @Autowired MyService myService;
 
     public static void main(String[] args) {
-        try {
-            ConfigurableApplicationContext c = SpringApplication.run(BootEx.class,args);
-        }catch (Exception ignored){
-        }
+        ConfigurableApplicationContext c = SpringApplication.run(BootEx.class,args);
     }
 
     @Bean
-    ApplicationRunner run(){
-        return args -> {
-            log.info("run");
-            ListenableFuture<String> res = myService.hello();
-            res.addCallback(s->log.info("success: "+s), e->log.error(e.getMessage()));
-            log.info("Exit");
-        };
+    ThreadPoolTaskExecutor tp(){
+        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+        te.setCorePoolSize(10);
+        te.setMaxPoolSize(100);
+        te.setQueueCapacity(50);
+        te.setThreadNamePrefix("ThReAd");
+        te.initialize();
+        return te;
     }
 }
