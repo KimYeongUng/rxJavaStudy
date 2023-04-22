@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoadTest {
     static AtomicInteger atomic = new AtomicInteger(0);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, BrokenBarrierException {
         ExecutorService es = Executors.newFixedThreadPool(100);
         RestTemplate template = new RestTemplate();
         String url = "http://localhost:8080/rest";
@@ -37,10 +37,11 @@ public class LoadTest {
                 return null; // callable - cyclicbarrier
             });
         }
-        es.shutdown();
-        es.awaitTermination(100, TimeUnit.SECONDS);
 
+        cyclicBarrier.await();
+        es.shutdown();
         watch.stop();
+
         log.info("totalTime: {}",watch.getTotalTimeSeconds());
     }
 }
