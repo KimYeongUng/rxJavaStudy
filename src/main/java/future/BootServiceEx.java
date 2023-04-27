@@ -18,7 +18,7 @@ public class BootServiceEx {
 
         @GetMapping("/service2")
         public String res2(String msg) throws InterruptedException {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             return "service "+msg;
         }
     }
