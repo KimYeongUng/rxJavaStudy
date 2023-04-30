@@ -1,16 +1,20 @@
 package rxjava2.coldhot;
 
-import io.reactivex.rxjava3.core.Flowable;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+
+import java.util.Arrays;
 
 @Slf4j
 public class ColdPublisher {
-    public static void main(String[] args) {
-        Flowable<Integer> flowable = Flowable.just(1,2,3,4);
+    public static void main(String[] args) throws InterruptedException {
+        Flux<String> cold =
+                Flux.fromIterable(Arrays.asList("a","b","c","d"))
+                        .map(String::toUpperCase);
 
-        log.info("SubScriber1 Timeline");
-        flowable.subscribe(data->log.info("sub1: {}",data));
-        log.info("Subscribe2 TImeline");
-        flowable.subscribe(data->log.info("sub2: {}",data));
+        cold.subscribe(s->log.info("data:{}",s));
+        System.out.println("==================");
+        Thread.sleep(2000);
+        cold.subscribe(s->log.info("data:{}",s));
     }
 }
