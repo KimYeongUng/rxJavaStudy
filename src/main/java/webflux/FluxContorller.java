@@ -22,10 +22,10 @@ public class FluxContorller {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{book-id}")
-    public Mono<Data> getData(@PathVariable("book-id") long bookid) throws InterruptedException {
+    @GetMapping("/{data-id}")
+    public Mono<Data> getData(@PathVariable("data-id") long dataid) throws InterruptedException {
         Thread.sleep(2000L);
-        Data data = dataMap.get(bookid);
+        Data data = dataMap.get(dataid);
         log.info("# response: {} , {}",data.getDataid(),data.getValue());
         return Mono.just(data);
     }
