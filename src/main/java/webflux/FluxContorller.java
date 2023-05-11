@@ -26,7 +26,7 @@ public class FluxContorller {
     public Mono<Data> getData(@PathVariable("data-id") long dataid) throws InterruptedException {
         Thread.sleep(2000L);
         Data data = dataMap.get(dataid);
-        log.info("# response: {} , {}",data.getDataid(),data.getValue());
+        log.info("# response: {} , {}",data.getDataId(),data.getValue());
         return Mono.just(data);
     }
 }
