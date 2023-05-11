@@ -24,7 +24,7 @@ public class FutureEx {
     }
 
 
-    interface SuccessCallabck{
+    interface SuccessCallback {
         void onSuccess(String result);
     }
 
@@ -36,9 +36,9 @@ public class FutureEx {
         void onError(Throwable t);
     }
     static class CallBackFutureTask extends FutureTask{
-        SuccessCallabck sc;
+        SuccessCallback sc;
         ExceptionCallback ec;
-        public CallBackFutureTask(Callable<String> callable,SuccessCallabck sc,ExceptionCallback ec){
+        public CallBackFutureTask(Callable<String> callable, SuccessCallback sc, ExceptionCallback ec){
             super(callable);
             this.sc = Objects.requireNonNull(sc);
             this.ec = Objects.requireNonNull(ec);
