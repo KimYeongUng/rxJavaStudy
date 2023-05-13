@@ -1,32 +1,41 @@
 package webflux;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
 
 
 @Slf4j
 @RequestMapping(path = "/flux/data",produces = {MediaType.APPLICATION_JSON_VALUE})
 @RestController
 public class FluxContorller {
-    Map<Long,Data> dataMap;
 
-    @Autowired
-    public FluxContorller(Map<Long,Data> dataMap){
-        this.dataMap = dataMap;
+    private final DataService service;
+    private final DataMapper mapper;
+
+    public FluxContorller(DataService service,DataMapper mapper){
+        this.mapper = mapper;
+        this.service = service;
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Data> postData(@RequestBody Mono<DataDto.Post> requestBody){
+        Mono<Data> res = service.createData(requestBody);
+        return res.flatMap(data -> Mono.just(mapper.dataToDataResponse(data)));
+    }
+
+    @PatchMapping("/{data-id}")
+    public Mono<Data> patchData(@PathVariable("data-id") Long dataId,@RequestBody Mono<DataDto.Patch> requestBody){
+        Mono<Data> res = service.updateData(dataId,requestBody);
+        return res.flatMap(data -> Mono.just(mapper.dataToDataResponse(data)));
+    }
+
     @GetMapping("/{data-id}")
-    public Mono<Data> getData(@PathVariable("data-id") long dataid) throws InterruptedException {
-        Thread.sleep(2000L);
-        Data data = dataMap.get(dataid);
-        log.info("# response: {} , {}",data.getDataId(),data.getValue());
-        return Mono.just(data);
+    public Mono<Data> getData(@PathVariable("data-id") Long dataId){
+        return service.findData(dataId).flatMap(data->Mono.just(mapper.dataToDataResponse(data)));
     }
 }
