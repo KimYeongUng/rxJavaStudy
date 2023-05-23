@@ -1,5 +1,6 @@
 package webflux.functional;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -18,7 +19,7 @@ public class DataHandler {
         this.mapper = mapper;
     }
 
-    public Mono<ServerResponse> createData(ServerRequest request){
+    public @NotNull Mono<ServerResponse> createData(ServerRequest request){
         return request.bodyToMono(DataDto.Post.class)
                 .map(mapper::dataPostToData)
                 .flatMap(data ->
@@ -27,7 +28,7 @@ public class DataHandler {
                         );
     }
 
-    public Mono<ServerResponse> getData(ServerRequest request){
+    public @NotNull Mono<ServerResponse> getData(ServerRequest request){
         long dataId = Long.parseLong(request.pathVariable("data-id"));
         Data data =
                 new Data(dataId,"value1","value2");
@@ -36,7 +37,7 @@ public class DataHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono<ServerResponse> patchData(ServerRequest request){
+    public @NotNull Mono<ServerResponse> patchData(ServerRequest request){
         final long dataId = Long.parseLong(request.pathVariable("data-id"));
 
         return request
@@ -48,7 +49,7 @@ public class DataHandler {
                 .flatMap(data -> ServerResponse.ok().bodyValue(mapper.dataToDataResponse(data)));
     }
 
-    public Mono<ServerResponse> getAllData(ServerRequest request){
+    public @NotNull Mono<ServerResponse> getAllData(ServerRequest request){
         List<Data> data =
                 List.of(new Data(1L,"value1","value2"),
                         new Data(2L,"value3","value4"),
