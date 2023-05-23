@@ -3,7 +3,6 @@ package functional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,7 +17,7 @@ public class FunctionEx {
         List<String> data = Arrays.asList("e","c","b","d","a");
 
         // functional interface
-        Collections.sort(data, Comparator.naturalOrder());
+        data.sort(Comparator.naturalOrder());
 
         for (String s:data)
             print.accept(s);
