@@ -21,6 +21,5 @@ public class ConsumerEx {
             System.out.println();
         }
 
-
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 
@@ -16,6 +17,16 @@ public class FluxContorller {
     private final DataService service;
     private final DataMapper mapper;
 
+    //webclient
+    @GetMapping("/webclient")
+    public Mono<String> doWebClient(){
+        WebClient client = WebClient.create();
+        return client
+                .get()
+                .uri("http://localhost:8080/webclient/create")
+                .retrieve()
+                .bodyToMono(String.class);
+    }
     public FluxContorller(DataService service,DataMapper mapper){
         this.mapper = mapper;
         this.service = service;
