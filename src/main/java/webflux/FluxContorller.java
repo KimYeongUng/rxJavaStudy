@@ -8,7 +8,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 
-
 @Slf4j
 @RequestMapping(path = "/flux/data",produces = {MediaType.APPLICATION_JSON_VALUE})
 @RestController
@@ -23,7 +22,7 @@ public class FluxContorller {
         WebClient client = WebClient.create();
         return client
                 .get()
-                .uri("http://localhost:8080/webclient/create")
+                .uri("http://localhost:8081/webclient/create")
                 .retrieve()
                 .bodyToMono(String.class);
     }
@@ -49,4 +48,5 @@ public class FluxContorller {
     public Mono<Data> getData(@PathVariable("data-id") Long dataId){
         return service.findData(dataId).flatMap(data->Mono.just(mapper.dataToDataResponse(data)));
     }
+
 }
