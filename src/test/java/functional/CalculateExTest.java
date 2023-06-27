@@ -1,6 +1,5 @@
 package functional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,14 +7,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CalculateExTest {
 
-    Calculator calculator;
-
-    @BeforeEach
-    public void setUp(){
+    @Test
+    public void calculateAdditional(){
+        Calculator calculator = new CalculatorService(new Additional());
+        int res = calculator.calculate(1,1);
+        assertEquals(res,2);
     }
 
     @Test
-    public void calculateTest(){
+    public void calculateSubstraction(){
+        Calculator calculator = new CalculatorService(new Substraction());
+        int res = calculator.calculate(1,1);
+        assertEquals(res,0);
     }
 
 }
