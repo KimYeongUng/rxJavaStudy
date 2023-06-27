@@ -30,9 +30,25 @@ class Substraction implements Calculator{
     }
 }
 
+class Mulitple implements Calculator{
+
+    @Override
+    public int calculate(int num1, int num2) {
+        return num1 * num2;
+    }
+}
+
+class Divide implements Calculator{
+
+    @Override
+    public int calculate(int num1, int num2) {
+        return num1/num2;
+    }
+}
+
 class CalculatorService implements Calculator{
 
-    private Calculator calculator;
+    private final Calculator calculator;
 
     CalculatorService(Calculator calculator){
         this.calculator = calculator;
