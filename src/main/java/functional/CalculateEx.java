@@ -1,7 +1,6 @@
 package functional;
 
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.functions.Function;
 
 public class CalculateEx {
     static BiFunction<Integer,Integer,Integer> add = Integer::sum;

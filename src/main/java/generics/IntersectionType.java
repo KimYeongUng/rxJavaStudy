@@ -1,21 +1,47 @@
 package generics;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class IntersectionType {
+public class IntersectionType{
+
+    interface Hello{
+        default void hello(){
+            System.out.println("Hello");
+        }
+    }
+
+    interface Hi{
+        default void hi(){
+            System.out.println("Hi");
+        }
+    }
+
+    interface Prinnt{
+        default void print(String val){
+            System.out.println(val);
+        }
+    }
+
     public static void main(String[] args) {
-        hello((Function & Serializable) s->s);
-        List<Integer> list = Arrays.asList(1,2,3,4,5);
-        String s = list.stream().map(String::valueOf).collect(Collectors.joining(":"));
-        System.out.println(s);
+        hello((Function & Hello & Hi & Prinnt) s->s);
+        System.out.println("=====");
+        run((Function & Hello & Hi) s->s,o->{
+            o.hello();
+            o.hi();
+        });
+    }
+
+    private static <T extends Function> void run(T t, Consumer<T> consumer) {
+        consumer.accept(t);
     }
 
     // marker interface
-
-    private static void hello(Function o) {
+    private static <T extends Function & Hello & Hi & Prinnt> void hello(T t) {
+        t.hello();
+        t.hi();
+        t.print("value");
     }
+
+
 }
