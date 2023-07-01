@@ -5,30 +5,30 @@ import java.util.function.Function;
 
 public class IntersectionType{
 
-    interface Hello{
+    interface Hello extends Function{
         default void hello(){
             System.out.println("Hello");
         }
     }
 
-    interface Hi{
+    interface Hi extends Function{
         default void hi(){
             System.out.println("Hi");
         }
     }
 
-    interface Prinnt{
+    interface Print {
         default void print(String val){
             System.out.println(val);
         }
     }
 
     public static void main(String[] args) {
-        hello((Function & Hello & Hi & Prinnt) s->s);
-        System.out.println("=====");
-        run((Function & Hello & Hi) s->s,o->{
+        //hello((Function & Hello & Hi & Print) s->s);
+        run((Function & Hello & Hi & Print) s->s,o->{
             o.hello();
             o.hi();
+            o.print("lambda");
         });
     }
 
@@ -37,7 +37,7 @@ public class IntersectionType{
     }
 
     // marker interface
-    private static <T extends Function & Hello & Hi & Prinnt> void hello(T t) {
+    private static <T extends Function & Hello & Hi & Print> void hello(T t) {
         t.hello();
         t.hi();
         t.print("value");
