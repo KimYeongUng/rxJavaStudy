@@ -11,8 +11,8 @@ public class Generics3 {
         return list.size() == 0;
     }
 
-    static long frequency(List<?> list,Object elem){
-        return list.stream().filter(s->s.equals(elem)).count();
+    static long frequency(List<?> list){
+        return list.stream().filter(s->s.equals(2)).count();
     }
 
     static <T extends Comparable<T>> T max(List<T> list) {
@@ -22,7 +22,7 @@ public class Generics3 {
     public static void main(String[] args) {
         List<Integer> list = Arrays.asList(2,3,3,2,3,2,2,1,5,6,7);
         System.out.println(isEmpty(List.of()));
-        System.out.println(frequency(list,2));
+        System.out.println(frequency(list));
         System.out.println(max(list));
         System.out.println(Collections.max(list,
                 (Comparator<Object>) Comparator.comparing(Object::toString)));
