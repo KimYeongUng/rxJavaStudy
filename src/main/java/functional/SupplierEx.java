@@ -4,12 +4,13 @@ import java.util.function.Supplier;
 
 public class SupplierEx {
     public static void main(String[] args) throws InterruptedException {
+        System.out.println("Task Start");
         long start = System.currentTimeMillis();
         printIfValidIndex(1, SupplierEx::getVeryExpensiveValue);
         printIfValidIndex(-1, SupplierEx::getVeryExpensiveValue);
         printIfValidIndex(-3, SupplierEx::getVeryExpensiveValue);
         long end = System.currentTimeMillis();
-        System.out.println(end-start);
+        System.out.println("Time: "+(end-start)/1000 +" sec.");
     }
 
     private static String getVeryExpensiveValue(){
